@@ -53,14 +53,14 @@ The first pass of the grid is to look through all the requirements at each row a
 The second pass will be to look over all the cells in the grid to figure out the next set of cells that can be guaranteed shaded or unshaded based on the new updates in the grid. This is looped over multiple times while checking what strategies it can use to guarantee shaded or unshaded cells.
 
 ## Challenge
-
+The challenge of creating a parallel picture cross solver exists partially in the lack of many resources dedicated to this endeavor. Other logic puzzles and games such as chess and sudoko have been parallized to death, with a huge variety of different resources available for inspection. When solving a picture cross puzzle using a parallel implementation it is important for us to make sure we are making proper use of spatial locality in our memory accesses. Depending on how we go about solving the logic puzzle it is possible for us to take drastically longer than if we were to use a different approach. It is up to us to try out multiple different approaches and see how well that generalizes to the average puzzle, and choose the one that gives us the best results. This sort of trial and error approach may prove to be time consuming but it is somethng we should attempt in order to optimize our solution.
 
 ## Resources
 There are a few resources that uses Python (https://github.com/mprat/nonogram-solver) and JSON (https://github.com/ThomasR/nonogram-solver) to solve the picture cross puzzles.
 
 ## Goals and Deliverables
 ### Plan to Achieve
-* Impplement a full functional parallel picture cross solver with non-trivial speedup
+* Implement a full functional parallel picture cross solver with non-trivial speedup
 * Provide speedup graphs of based on number of cores
 * Have our solver working on line solvable puzzles, puzzles that do not require backtracking
 
