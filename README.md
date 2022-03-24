@@ -70,8 +70,13 @@ We are using GPUs to run the parallelism. We would want to use GPUs because ther
 
 ## Schedule
 3/28: 
+
 4/4:
+
 4/11:
+
 4/18:
+
 4/25:
+
 5/2:
