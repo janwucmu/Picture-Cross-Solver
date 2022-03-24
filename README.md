@@ -59,6 +59,14 @@ The second pass will be to look over all the cells in the grid to figure out the
 There are a few resources that uses Python (https://github.com/mprat/nonogram-solver) and JSON (https://github.com/ThomasR/nonogram-solver) to solve the picture cross puzzles.
 
 ## Goals and Deliverables
+### Plan to Achieve
+* Impplement a full functional parallel picture cross solver with non-trivial speedup
+* Provide speedup graphs of based on number of cores
+* Have our solver working on line solvable puzzles, puzzles that do not require backtracking
+
+### Hope to Achieve
+* Have our solver working on Symmetrical Puzzles, puzzles with symmetry are not line solvable and will require the use of a backtracking algorithm
+* Show images of different stages of our puzzle as it is being solved
 
 
 ## Platform Choice
@@ -69,14 +77,14 @@ We are using CUDA because the resources we are using to run parallelism is on GP
 We are using GPUs to run the parallelism. We would want to use GPUs because there the problem can be broken up into multiple independent parts, like cells, rows, and columns. There are also many different stages of parallelism for the solver. At each stage, we have similar execution instructions, so we can utilize the SIMD parallelism in the GPUs. 
 
 ## Schedule
-3/28: 
+3/28: Implement sequential version of Picture Cross Solver
 
-4/4:
+4/4: Implement parallel version of Picture Cross solver using CUDA
 
-4/11:
+4/11: Milestone Report due, Evaluate effectiveness of Picture Cross Solver
 
-4/18:
+4/18: Attempt to refine our parallel algorithm to seek better speedup
 
-4/25:
+4/25: Implement backtracking so that we can solve non-line solvable puzzles
 
-5/2:
+5/2: Handin and Demo
