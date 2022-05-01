@@ -213,7 +213,7 @@ int main(int argc, const char *argv[]) {
     if (pic_cross.dim_x == 0) {
         return 1;
     }
-    print_hints(pic_cross.hints);
+    // print_hints(pic_cross.hints);
     int dim_x = pic_cross.dim_x;
     int dim_y = pic_cross.dim_y;
     std::vector<std::vector<int>> hints = pic_cross.hints;
