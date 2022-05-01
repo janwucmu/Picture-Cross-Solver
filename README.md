@@ -88,3 +88,12 @@ We are using GPUs to run the parallelism. We would want to use GPUs because ther
 4/25: Implement backtracking so that we can solve non-line solvable puzzles
 
 5/2: Handin and Demo
+
+## Milestone Report
+We have figured out a sequential algorithm for the solver of the picture cross puzzle. We have tested it with a few example puzzles. The algorithm includes parsing the .txt files for the puzzles. We then find all possible permutations for each row and look through each of the possibilities. We use depth first search to find our solution, which includes backtracking when a solution does not satisfy all the requirements. Once the solution is found through DFS, we return our solution and print it out on the console. 
+
+In terms of progress on the goals and deliverables stated in our proposal, we are running a little behind schedule because the algorithm for the puzzle solver turned out to be harder than we thought. We spent a lot of our time debugging the correctness of our solver. We believe that we still can meet our deliverables. Now that we are have a working sequential solver, it should not be too hard to parallelize it.
+
+We want to focus on the algorithm of our solver because we think that is a essential part of the project. It took us longer than expected and we believe our solver is one of the highlights of this project. We will then discuss the different approaches we tried to improve the speedup of the solver when it is run on multiple CPU cores. Most importantly show the performance metrics in image formatting to portray the improvements of these parallelism. It will be more of graph-based rather than a demo.
+
+Since we have not started working on parallelizing the sequential solver, we are a little concerned about what approaches to take. We think that it is going to take a few approaches as some are more scalable and others work with more diverse puzzles.
