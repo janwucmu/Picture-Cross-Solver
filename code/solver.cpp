@@ -213,7 +213,28 @@ int main(int argc, const char *argv[]) {
     if (pic_cross.dim_x == 0) {
         return 1;
     }
-    // print_hints(pic_cross.hints);
+    print_hints(pic_cross.hints);
+    int dim_x = pic_cross.dim_x;
+    int dim_y = pic_cross.dim_y;
+    std::vector<std::vector<int>> hints = pic_cross.hints;
+    //Precal stuff
+    for (int r = 0; r < dim_x) {
+        int space = dim_y - (hints[r].size() - 1);
+        for (int i = 0; i < hints[r].size(); i ++) {
+            spaces -= hints[r][i];
+        }
+        calcPerms(r, 0, spaces, 0, 0, res);
+    }
+    // print_puzzle(pic_cross);
+    // write_output(argc, argv, pic_cross);
+    return 0;
+}
+int main(int argc, const char *argv[]) {
+    pic_cross_t pic_cross = read_input(argc, argv);
+    if (pic_cross.dim_x == 0) {
+        return 1;
+    }
+    print_hints(pic_cross.hints);
     int dim_x = pic_cross.dim_x;
     int dim_y = pic_cross.dim_y;
     std::vector<std::vector<int>> hints = pic_cross.hints;
