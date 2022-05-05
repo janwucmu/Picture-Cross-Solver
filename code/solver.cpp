@@ -236,24 +236,27 @@ void updateCols(int row, int numCol, std::vector<std::vector<int>>& puzzle,
     }
 }
 
-void rowMask(int row, int numCol, std::vector<std::vector<int>>& mask, 
-             std::vector<std::vector<int>>& val, std::vector<std::vector<int>>& colVal,
-             std::vector<std::vector<int>>& cols, std::vector<std::vector<int>>& colIx) {
+void rowMask(int row, int numCol, std::vector<int>& mask, std::vector<int>& val, 
+             std::vector<std::vector<int>>& colVal, std::vector<std::vector<int>>& cols, 
+             std::vector<std::vector<int>>& colIx) {
+    mask[row] = 0;
+    val[row] = 0;
     if (row == 0) {
         return;
     }
-    int ixc = 0;
+    int ixc = 1;
     for (int c = 0; c < numCol; c++) {
         if (colVal[row-1][c] > 0) {
-            mask[row][ixc] = 1;
+            mask[row] |= ixc;
             int index = colIx[row-1][c];
             if (cols[c][index] > colVal[row-1][c]) {
-                val[row][ixc] = 1;
+                val[row] |= ixc;
             }
         }
         else if (colVal[row-1][c] == 0 && colIx[row-1][c] == cols[c].size()) {
-            mask[row][ixc] = 1;
+            mask[row] |= ixc;
         }
+        ixc <<= 1;
     }
 }
 // boolean dfs(int row, int* rowPerms, int *rowPermsdim_xnt, 
