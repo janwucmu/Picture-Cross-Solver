@@ -199,7 +199,12 @@ pic_cross_t read_input(int argc, const char *argv[]) {
 //     return false;
 // }
 
+// boolean dfs(int row, int* rowPerms, int *rowPermsdim_xnt, 
+//             int* mask, int* val, int* grid, int* colVal, 
+//             int* colIdx, int* cols, pic_cross_t pic_cross){
+    
 
+// }
 float bits(int b){
     return (1 << b) - 1; // 1 => 1, 2 => 11, 3 => 111, ...
 }
@@ -210,7 +215,7 @@ float bits(int b){
 //         n >>= 1;
 //     }
 // }
-void calcPerms(int r, int cur, int spaces, std::size_t perm, int shift, pic_cross_t pic_cross, std::vector<int> *res){
+void calcPerms(int r, int cur, int spaces, std::size_t perm, int shift, pic_cross_t pic_cross, std::vector<int> &res){
     // int dim_x = pic_cross.dim_x;
     // int dim_y = pic_cross.dim_y;
     // int* puzzle = pic_cross.puzzle;
@@ -220,7 +225,7 @@ void calcPerms(int r, int cur, int spaces, std::size_t perm, int shift, pic_cros
         // if((puzzle[r] & perm) == puzzle[r]){
         //     res.add(perm);				
         // }
-        res->push_back(perm);
+        res.push_back(perm);
         return;
     }
     while(spaces >= 0){
@@ -230,6 +235,31 @@ void calcPerms(int r, int cur, int spaces, std::size_t perm, int shift, pic_cros
         spaces--;
     }
 }
+
+// at every row and column (every box in the grid)
+// colVal[r][c]: current position within the current blocksize
+// colIx[r][c]: current block index
+// The value increased by 1 if the column is painted in the current row.
+// The value reset to 0 and index increased by 1 if the column was painted in the previous row and is not in the current row.
+// void updateCols(int row, std::vector<std::vector<int>>* colVal, std::vector<std::vector<int>>* colIx) {
+//     int ixc = 0;
+//     for (int c = 0; c < numCol; c++) {
+//         // copy from previous row
+//         colVal[row][c] = (row == 0) ? 0 : colVal[row-1][c];
+//         colIx[row][c] = (row == 0) ? 0 : colIx[row-1][c];
+//         if ((puzzle[row][ixc]) == 0) {
+//             if ((row > 0) && (colVal[row-1][c] > 0)) {
+//                 colVal[row][c] = 0;
+//                 colIx[row][c]++; 
+//             }
+//         }
+//         else {
+//             colVal[row][c]++;
+//         }
+//         ixc++;
+//     }
+// }
+
 int main(int argc, const char *argv[]) {
     pic_cross_t pic_cross = read_input(argc, argv);
     if (pic_cross.dim_x == 0) {
@@ -248,7 +278,7 @@ int main(int argc, const char *argv[]) {
         for (int i = 0; i < hints[r].size(); i ++) {
             space -= hints[r][i];
         }
-        calcPerms(r, 0, space, 0, 0, pic_cross, &res);
+        calcPerms(r, 0, space, 0, 0, pic_cross, res);
         // printf("%d HUUHH", res[0]);
         Row_perm.push_back(res);
     }
