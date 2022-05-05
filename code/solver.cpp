@@ -11,6 +11,7 @@
 #include <fstream>
 #include <sstream>
 #include <bitset>
+#include <math.h>
 
 int old_dim_x;
 int old_dim_y;
@@ -222,7 +223,7 @@ void calcPerms(int r, int cur, int spaces, std::size_t perm, int shift, pic_cros
 // The value increased by 1 if the column is painted in the current row.
 // The value reset to 0 and index increased by 1 if the column was painted in the previous row and is not in the current row.
 void updateCols(int row, int numCol, int* puzzle, int** colVal, int** colIx) {
-    int ixc = 1;
+    int ixc = (int)pow(2, numCol-1);
     for (int c = 0; c < numCol; c++) {
 
             // printf("1c %d, row %d \n", c, row);
@@ -241,7 +242,7 @@ void updateCols(int row, int numCol, int* puzzle, int** colVal, int** colIx) {
             
             colVal[row][c]++;
         }
-        ixc <<= 1;
+        ixc >>= 1;
     }
 }
 
@@ -258,7 +259,7 @@ void rowMask(int row, int numCol, long* mask, long* val,
     if (row == 0) {
         return;
     }
-    int ixc = 1;
+    int ixc = (int)pow(2, numCol-1);
     for (int c = 0; c < dim_y; c++) {
         if (colVal[row-1][c] > 0) {
             mask[row] |= ixc;
@@ -270,7 +271,7 @@ void rowMask(int row, int numCol, long* mask, long* val,
         else if (colVal[row-1][c] == 0 && colIx[row-1][c] == hints[c+dim_x].size()) {
             mask[row] |= ixc;
         }
-        ixc <<= 1;
+        ixc >>= 1;
     }
 }
 // boolean dfs(int row, int* rowPerms, int *rowPermsdim_xnt, 
