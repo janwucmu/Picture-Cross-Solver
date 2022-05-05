@@ -59,6 +59,14 @@ void print_puzzle(pic_cross_t pic_cross) {
             std::cout << "\n";
         }
 }
+void print_2d(int** col) { 
+    for (int i = 0; i < old_dim_x; i++) {
+        for (int j = 0; j < old_dim_y; j++) {
+            std::cout << col[i][j];
+        }
+        std::cout << "\n";
+    }
+}
 void print_row_perm(std::vector<std::vector<int>> Row_perm, int dim_y) {
     for (int i = 0; i < Row_perm.size(); i ++) {
         for (int j = 0; j < Row_perm[i].size(); j ++) {
@@ -295,14 +303,18 @@ bool dfs(int row, std::vector<std::vector<int>>& Row_perm,
     int dim_x = pic_cross->dim_x;
     int dim_y = pic_cross->dim_y;
     int* puzzle = pic_cross->puzzle;
-            print_puzzle(*pic_cross);
+    printf("ROW: %d \n", row);
+    print_puzzle(*pic_cross);
+    printf("COLVAL \n");
+    print_2d(colVal);
+    printf("ColIX \n");
+    print_2d(colIx);
 
     if (row == dim_x) {
         return true;
     }
 
     rowMask(row, dim_y, mask, val, colVal, colIx, pic_cross);
-    printf("%d Row_perm[row] \n", Row_perm[row].size());
     for (int i = 0; i < Row_perm[row].size();i++) {
         if (Row_perm[row][i] & mask[row] != val[row]) {
             continue;
@@ -352,7 +364,7 @@ int main(int argc, const char *argv[]) {
     long mask[dim_x];
     long val[dim_x];
     if (dfs(0, Row_perm, mask, val, colVal, colIx, &pic_cross)) {
-        print_puzzle(pic_cross);
+        // print_puzzle(pic_cross);
     }
     write_output(argc, argv, pic_cross);
 
