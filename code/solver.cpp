@@ -47,16 +47,18 @@ void print_hints(std::vector<std::vector<int>> hints) {
         printf("\n");
     }    
 }
-void print_puzzle(pic_cross_t pic_cross) {
+void print_puzzle(pic_cross_t pic_cross) {  
     int* puzzle = pic_cross.puzzle;
     int dim_x = pic_cross.dim_x;
     int dim_y = pic_cross.dim_y;
-    for (int y = 0; y < dim_y; y++) {
-        for (int x = 0; x < dim_x; x++) {
-            printf("%d ", puzzle[dim_x * y + x]);
+    for (int i = 0; i < dim_x; i++) {
+        std::bitset<64> x(puzzle[i]);
+            for (int k = dim_y - 1; k != -1; k --) {
+                std::cout << x[k];
+            }
+            std::cout << " ";
         }
-        printf("\n");
-    }    
+            std::cout << "\n";
 }
 void print_row_perm(std::vector<std::vector<int>> Row_perm, int dim_y) {
     for (int i = 0; i < Row_perm.size(); i ++) {
@@ -84,17 +86,14 @@ void write_output(int argc, const char *argv[], pic_cross_t pic_cross) {
     std::ofstream output1;
     output1.open((std::string)"outputs/output_" + filename + ".txt");
     output1 << dim_x << " " << dim_y << "\n";
-    for (int y = 0; y < dim_y; y++) {
-        for (int x = 0; x < dim_x; x++) {
-            if (puzzle[dim_x * y + x] == 0) {
-                 output1 << "0";
+    for (int i = 0; i < dim_x; i++) {
+        std::bitset<64> x(puzzle[i]);
+            for (int k = dim_y - 1; k != -1; k --) {
+                output1 << x[k];
             }
-            else {
-                output1 << "#";
-            }
+            output1 << " ";
         }
-        output1 << "\n";
-    }
+            output1 << "\n";
     output1.close();
 }
 pic_cross_t read_input(int argc, const char *argv[]) {
@@ -111,7 +110,7 @@ pic_cross_t read_input(int argc, const char *argv[]) {
         return pic_cross;
     }
     fscanf(input, "%d %d\n", &dim_x, &dim_y);
-    pic_cross.puzzle = (int*)calloc(dim_x * dim_y, sizeof(int));
+    pic_cross.puzzle = (int*)calloc(dim_x, sizeof(int));
     pic_cross.dim_x = dim_x;
     pic_cross.dim_y = dim_y;
     std::vector<std::vector<int> > hints;
@@ -336,9 +335,9 @@ int main(int argc, const char *argv[]) {
     int colIx[dim_x][dim_y];
     long mask[dim_x];
     long val[dim_x];
-    if (dfs(0, Row_perm, &mask, &val, &colVal, &colIx, &pic_cross)) {
-        print_puzzle(pic_cross);
-    }
+    // if (dfs(0, Row_perm, &mask, &val, &colVal, &colIx, &pic_cross)) {
+    //     print_puzzle(pic_cross);
+    // }
 
 
 
