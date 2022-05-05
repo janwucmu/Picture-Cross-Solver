@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <fstream>
 #include <sstream>
+#include <bitset>
 
 int old_dim_x;
 int old_dim_y;
@@ -56,6 +57,18 @@ void print_puzzle(pic_cross_t pic_cross) {
         }
         printf("\n");
     }    
+}
+void print_row_perm(std::vector<std::vector<int>> Row_perm, int dim_y) {
+    for (int i = 0; i < Row_perm.size(); i ++) {
+        for (int j = 0; j < Row_perm[i].size(); j ++) {
+            std::bitset<64> x(Row_perm[i][j]);
+            for (int k = dim_y - 1; k != -1; k --) {
+                std::cout << x[k];
+            }
+            std::cout << " ";
+        }
+            std::cout << "\n";
+        }
 }
 void write_output(int argc, const char *argv[], pic_cross_t pic_cross) {
     _argc = argc - 1;
@@ -121,6 +134,8 @@ pic_cross_t read_input(int argc, const char *argv[]) {
     pic_cross.hints = hints;
     return pic_cross;
 }
+
+
 // void rowMask(int row, int* mask, int* val, int* colVal, int* colIdx, int* cols, pic_cross_t pic_cross){
 //     int dim_x = pic_cross.dim_x;
 //     mask[row] = 0;
@@ -184,23 +199,10 @@ pic_cross_t read_input(int argc, const char *argv[]) {
 //     return false;
 // }
 
-void calcPerms(int r, int cur, int spaces, float perm, int shift, int* rows, int* grid, int* res, int length){
-    if(cur == length){
-        if((grid[r] & perm) == grid[r]){
-            res.add(perm);				
-        }
-        return;
-    }
-    while(spaces >= 0){
-        calcPerms(r, cur+1, spaces, perm|(bits(rows[r][cur])<<shift), shift+rows[r][cur]+1, rows, grid, res);
-        shift++;
-        spaces--;
-    }
-}
 
-// float bits(int b){
-//     return (1 << b) - 1; // 1 => 1, 2 => 11, 3 => 111, ...
-// }
+float bits(int b){
+    return (1 << b) - 1; // 1 => 1, 2 => 11, 3 => 111, ...
+}
 
 // void printBit(float n){
 //     while(n > 0){
@@ -208,6 +210,26 @@ void calcPerms(int r, int cur, int spaces, float perm, int shift, int* rows, int
 //         n >>= 1;
 //     }
 // }
+void calcPerms(int r, int cur, int spaces, std::size_t perm, int shift, pic_cross_t pic_cross, std::vector<int> *res){
+    // int dim_x = pic_cross.dim_x;
+    // int dim_y = pic_cross.dim_y;
+    // int* puzzle = pic_cross.puzzle;
+    std::vector<std::vector<int>> hints = pic_cross.hints;
+
+    if(cur == hints[r].size()){
+        // if((puzzle[r] & perm) == puzzle[r]){
+        //     res.add(perm);				
+        // }
+        res->push_back(perm);
+        return;
+    }
+    while(spaces >= 0){
+        int b = bits(hints[r][cur]);
+        calcPerms(r, cur+1, spaces, perm|(b<<shift), shift+hints[r][cur]+1, pic_cross, res);
+        shift++;
+        spaces--;
+    }
+}
 int main(int argc, const char *argv[]) {
     pic_cross_t pic_cross = read_input(argc, argv);
     if (pic_cross.dim_x == 0) {
@@ -217,21 +239,51 @@ int main(int argc, const char *argv[]) {
     int dim_x = pic_cross.dim_x;
     int dim_y = pic_cross.dim_y;
     std::vector<std::vector<int>> hints = pic_cross.hints;
+    std::vector<std::vector<int>> Row_perm;
     //Precal stuff
-    for (int r = 0; r < dim_x) {
+    std::vector<int> res;
+    for (int r = 0; r < dim_x; r++) {
+        res.clear();
         int space = dim_y - (hints[r].size() - 1);
         for (int i = 0; i < hints[r].size(); i ++) {
-            spaces -= hints[r][i];
+            space -= hints[r][i];
         }
-        calcPerms(r, 0, spaces, 0, 0, res);
+        calcPerms(r, 0, space, 0, 0, pic_cross, &res);
+        // printf("%d HUUHH", res[0]);
+        Row_perm.push_back(res);
     }
+    print_row_perm(Row_perm, dim_y);
+    // for (int i = 0; i < Row_perm.size(); i ++) {
+    //     for (int j = 0; j < Row_perm[i].size(); j ++) {
+    //         std::bitset<64> x(Row_perm[i][j]);
+    //         for (int k = dim_y - 1; k != -1; k --) {
+    //             std::cout << x[k];
+    //         }
+    //         std::cout << " ";
+    //     }
+    //       std::cout << "\n";
+
+    // }
+    // print_hints(Row_perm);
     // print_puzzle(pic_cross);
     // write_output(argc, argv, pic_cross);
     return 0;
 }
 
 
-
+// void calcPerms(int r, int cur, int spaces, float perm, int shift, int* rows, int* grid, int* res, int length){
+//     if(cur == length){
+//         if((grid[r] & perm) == grid[r]){
+//             res.add(perm);				
+//         }
+//         return;
+//     }
+//     while(spaces >= 0){
+//         calcPerms(r, cur+1, spaces, perm|(bits(rows[r][cur])<<shift), shift+rows[r][cur]+1, rows, grid, res);
+//         shift++;
+//         spaces--;
+//     }
+// }
 // int main(int argc, char **argv) {
 //     // read input
 //     // TODO: find row and col from txt
