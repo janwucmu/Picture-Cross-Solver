@@ -179,32 +179,7 @@ pic_cross_t read_input(int argc, const char *argv[]) {
 //     }
 // }
 
-// boolean dfs(int row, int* rowPerms, int *rowPermsdim_xnt, 
-//             int* mask, int* val, int* grid, int* colVal, 
-//             int* colIdx, int* cols, pic_cross_t pic_cross){
-//     if(row == dim_y){
-//         return true;
-//     }
-//     rowMask(row, mask, val, colVal, colIdx, cols, pic_cross); // calculate mask to stay valid in the next row
-//     for(int i = 0; i < rowPermsdim_xnt[row]; i++){
-//         if((rowPerms[row][i] & mask[row]) != val[row]){
-//             continue;
-//         }
-//         grid[row] = rowPerms[row][i];
-//         updatedim_xols(row, grid, colVal, colIdx, cols);
-//         if(dfs(row + 1, rowPerms, rowPermsdim_xnt, mask, val, grid, colVal, colIdx, cols)){
-//             return true;
-//         }
-//     }
-//     return false;
-// }
 
-// boolean dfs(int row, int* rowPerms, int *rowPermsdim_xnt, 
-//             int* mask, int* val, int* grid, int* colVal, 
-//             int* colIdx, int* cols, pic_cross_t pic_cross){
-    
-
-// }
 float bits(int b){
     return (1 << b) - 1; // 1 => 1, 2 => 11, 3 => 111, ...
 }
@@ -281,7 +256,48 @@ void rowMask(int row, int numCol, std::vector<std::vector<int>>& mask,
         }
     }
 }
+// boolean dfs(int row, int* rowPerms, int *rowPermsdim_xnt, 
+//             int* mask, int* val, int* grid, int* colVal, 
+//             int* colIdx, int* cols, pic_cross_t pic_cross){
+//     if(row == dim_y){
+//         return true;
+//     }
+//     rowMask(row, mask, val, colVal, colIdx, cols, pic_cross); // calculate mask to stay valid in the next row
+//     for(int i = 0; i < rowPermsdim_xnt[row]; i++){
+//         if((rowPerms[row][i] & mask[row]) != val[row]){
+//             continue;
+//         }
+//         grid[row] = rowPerms[row][i];
+//         updatedim_xols(row, grid, colVal, colIdx, cols);
+//         if(dfs(row + 1, rowPerms, rowPermsdim_xnt, mask, val, grid, colVal, colIdx, cols)){
+//             return true;
+//         }
+//     }
+//     return false;
+// }
 
+boolean dfs(int row, std::vector<std::vector<int>>& Row_perms, 
+        std::vector<std::vector<int>>& mask,
+        std::vector<std::vector<int>>& val,
+        std::vector<std::vector<int>>& colVal,
+        std::vector<std::vector<int>>& cols,
+        std::vector<std::vector<int>>& colIx,
+        pic_cross_t * pic_cross){
+
+    int dim_x = pic_cross.dim_x;
+    int dim_y = pic_cross.dim_y;
+    rowMask(row, num_Col, mask, coVal, cols, colIx);
+    for (int i =0; i < Row_perms[row].size();i++) {
+        if (Row_perms[row][i] & mask[row] != val[row]) {
+            continue;
+        }
+        pic_cross->puzzle[row] = Row_perms[row][i];
+void updateCols(int row, int numCol, int* puzzle, 
+                int* colVal, int* colIx) {
+        updateCols(row, numCol, )
+    }
+
+}
 int main(int argc, const char *argv[]) {
     pic_cross_t pic_cross = read_input(argc, argv);
     if (pic_cross.dim_x == 0) {
@@ -305,6 +321,12 @@ int main(int argc, const char *argv[]) {
         Row_perm.push_back(res);
     }
     print_row_perm(Row_perm, dim_y);
+    int colVal[dim_x][dim_y] ;
+    int colIx[dim_x][dim_y];
+    long mask[dim_x];
+    long val[dim_x];
+
+
     // for (int i = 0; i < Row_perm.size(); i ++) {
     //     for (int j = 0; j < Row_perm[i].size(); j ++) {
     //         std::bitset<64> x(Row_perm[i][j]);
