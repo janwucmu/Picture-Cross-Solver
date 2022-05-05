@@ -91,9 +91,8 @@ void write_output(int argc, const char *argv[], pic_cross_t pic_cross) {
             for (int k = dim_y - 1; k != -1; k --) {
                 output1 << x[k];
             }
-            output1 << " ";
-        }
             output1 << "\n";
+        }
     output1.close();
 }
 pic_cross_t read_input(int argc, const char *argv[]) {
@@ -218,44 +217,50 @@ void calcPerms(int r, int cur, int spaces, std::size_t perm, int shift, pic_cros
 void updateCols(int row, int numCol, int* puzzle, int** colVal, int** colIx) {
     int ixc = 1;
     for (int c = 0; c < numCol; c++) {
+
+            // printf("1c %d, row %d \n", c, row);
         // copy from previous row
         colVal[row][c] = (row == 0) ? 0 : colVal[row-1][c];
         colIx[row][c] = (row == 0) ? 0 : colIx[row-1][c];
         if ((puzzle[row] & ixc) == 0) {
+
             if ((row > 0) && (colVal[row-1][c] > 0)) {
+
                 colVal[row][c] = 0;
                 colIx[row][c]++; 
             }
         }
         else {
+            
             colVal[row][c]++;
         }
         ixc <<= 1;
     }
 }
 
-void rowMask(int row, int numCol, std::vector<int>& mask, std::vector<int>& val, 
+void rowMask(int row, int numCol, long* mask, long* val, 
              int** colVal,
-             std::vector<std::vector<int>>& colIx, pic_cross_t pic_cross) {
-    
-    int dim_x = pic_cross.dim_x;
-    int dim_y = pic_cross.dim_y;
-    std::vector<std::vector<int>> hints = pic_cross.hints;
+             int** colIx, pic_cross_t* pic_cross) {
+
+
+    int dim_x = pic_cross->dim_x;
+    int dim_y = pic_cross->dim_y;
+    std::vector<std::vector<int>> hints = pic_cross->hints;
     mask[row] = 0;
     val[row] = 0;
     if (row == 0) {
         return;
     }
     int ixc = 1;
-    for (int c = dim_x; c < dim_x+dim_y; c++) {
+    for (int c = 0; c < dim_y; c++) {
         if (colVal[row-1][c] > 0) {
             mask[row] |= ixc;
             int index = colIx[row-1][c];
-            if (hints[c][index] > colVal[row-1][c]) {
+            if (hints[c + dim_x][index] > colVal[row-1][c]) {
                 val[row] |= ixc;
             }
         }
-        else if (colVal[row-1][c] == 0 && colIx[row-1][c] == hints[c].size()) {
+        else if (colVal[row-1][c] == 0 && colIx[row-1][c] == hints[c+dim_x].size()) {
             mask[row] |= ixc;
         }
         ixc <<= 1;
@@ -286,21 +291,26 @@ bool dfs(int row, std::vector<std::vector<int>>& Row_perm,
         long* mask,
         long* val,
         int** colVal,
-        int** cols,
         int** colIx,
         pic_cross_t * pic_cross){
-
     int dim_x = pic_cross->dim_x;
     int dim_y = pic_cross->dim_y;
     int* puzzle = pic_cross->puzzle;
-    rowMask(row, dim_y, &mask, coVal, colIx, pic_cross);
+
+    if (row == dim_x) {
+        return true;
+    }
+
+    rowMask(row, dim_y, mask, val, colVal, colIx, pic_cross);
+    printf("%d Row_perm[row] \n", Row_perm[row].size());
     for (int i = 0; i < Row_perm[row].size();i++) {
         if (Row_perm[row][i] & mask[row] != val[row]) {
             continue;
         }
         puzzle[row] = Row_perm[row][i];
-        updateCols(row, dim_y, &puzzle, &colVal, &colIx);
-        if (dfs(row+1, Row_perm, &mask, &val, &colVal, &colIx, &pic_cross)) {
+
+        updateCols(row, dim_y, puzzle, colVal, colIx);
+        if (dfs(row+1, Row_perm, mask, val, colVal, colIx, pic_cross)) {   
             return true;
         }
     }
@@ -315,6 +325,8 @@ int main(int argc, const char *argv[]) {
     print_hints(pic_cross.hints);
     int dim_x = pic_cross.dim_x;
     int dim_y = pic_cross.dim_y;
+    old_dim_x = dim_x;
+    old_dim_y = dim_y;
     std::vector<std::vector<int>> hints = pic_cross.hints;
     std::vector<std::vector<int>> Row_perm;
     //Precal stuff
@@ -330,15 +342,28 @@ int main(int argc, const char *argv[]) {
         Row_perm.push_back(res);
     }
     print_row_perm(Row_perm, dim_y);
-    int colVal[dim_x][dim_y] ;
-    int colIx[dim_x][dim_y];
+
+    int** colVal = (int**) calloc(dim_x , sizeof(int*)) ;
+    int** colIx = (int**) calloc(dim_x, sizeof(int*));
+    for (int i = 0; i < dim_y; i++) {
+        colVal[i] = (int*) calloc(dim_y, sizeof(int));
+        colIx[i] = (int*) calloc(dim_y, sizeof(int));
+    }
     long mask[dim_x];
     long val[dim_x];
-    // if (dfs(0, Row_perm, &mask, &val, &colVal, &colIx, &pic_cross)) {
-    //     print_puzzle(pic_cross);
-    // }
+    if (dfs(0, Row_perm, mask, val, colVal, colIx, &pic_cross)) {
+        print_puzzle(pic_cross);
+    }
+    write_output(argc, argv, pic_cross);
 
 
+// bool dfs(int row, 
+//         std::vector<std::vector<int>>& Row_perm, 
+//         long* mask,
+//         long* val,
+//         int** colVal,
+//         int** colIx,
+//         pic_cross_t * pic_cross){
 
     // for (int i = 0; i < Row_perm.size(); i ++) {
     //     for (int j = 0; j < Row_perm[i].size(); j ++) {
