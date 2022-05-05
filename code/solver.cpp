@@ -241,24 +241,46 @@ void calcPerms(int r, int cur, int spaces, std::size_t perm, int shift, pic_cros
 // colIx[r][c]: current block index
 // The value increased by 1 if the column is painted in the current row.
 // The value reset to 0 and index increased by 1 if the column was painted in the previous row and is not in the current row.
-// void updateCols(int row, std::vector<std::vector<int>>* colVal, std::vector<std::vector<int>>* colIx) {
-//     int ixc = 0;
-//     for (int c = 0; c < numCol; c++) {
-//         // copy from previous row
-//         colVal[row][c] = (row == 0) ? 0 : colVal[row-1][c];
-//         colIx[row][c] = (row == 0) ? 0 : colIx[row-1][c];
-//         if ((puzzle[row][ixc]) == 0) {
-//             if ((row > 0) && (colVal[row-1][c] > 0)) {
-//                 colVal[row][c] = 0;
-//                 colIx[row][c]++; 
-//             }
-//         }
-//         else {
-//             colVal[row][c]++;
-//         }
-//         ixc++;
-//     }
-// }
+void updateCols(int row, int numCol, std::vector<std::vector<int>>& puzzle, 
+                std::vector<std::vector<int>>& colVal, std::vector<std::vector<int>>& colIx) {
+    int ixc = 0;
+    for (int c = 0; c < numCol; c++) {
+        // copy from previous row
+        colVal[row][c] = (row == 0) ? 0 : colVal[row-1][c];
+        colIx[row][c] = (row == 0) ? 0 : colIx[row-1][c];
+        if ((puzzle[row][ixc]) == 0) {
+            if ((row > 0) && (colVal[row-1][c] > 0)) {
+                colVal[row][c] = 0;
+                colIx[row][c]++; 
+            }
+        }
+        else {
+            colVal[row][c]++;
+        }
+        ixc++;
+    }
+}
+
+void rowMask(int row, int numCol, std::vector<std::vector<int>>& mask, 
+             std::vector<std::vector<int>>& val, std::vector<std::vector<int>>& colVal,
+             std::vector<std::vector<int>>& cols, std::vector<std::vector<int>>& colIx) {
+    if (row == 0) {
+        return;
+    }
+    int ixc = 0;
+    for (int c = 0; c < numCol; c++) {
+        if (colVal[row-1][c] > 0) {
+            mask[row][ixc] = 1;
+            int index = colIx[row-1][c];
+            if (cols[c][index] > colVal[row-1][c]) {
+                val[row][ixc] = 1;
+            }
+        }
+        else if (colVal[row-1][c] == 0 && colIx[row-1][c] == cols[c].size()) {
+            mask[row][ixc] = 1;
+        }
+    }
+}
 
 int main(int argc, const char *argv[]) {
     pic_cross_t pic_cross = read_input(argc, argv);
