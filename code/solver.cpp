@@ -310,7 +310,25 @@ bool dfs(int row, std::vector<std::vector<int>>& Row_perm,
     print_2d(colVal);
     printf("ColIX \n");
     print_2d(colIx);
-
+    printf("Row_perm\n");
+    print_row_perm(Row_perm, dim_y);
+    printf("mask \n");
+    for (int i =0; i < dim_x; i++) {
+            std::bitset<64> x(mask[i]);
+            for (int k = dim_y - 1; k != -1; k --) {
+                std::cout << x[k];
+            }
+            std::cout << "\n";
+        }
+    printf("val \n");
+    for (int i =0; i < dim_x; i++) {
+            std::bitset<64> x(val[i]);
+            for (int k = dim_y - 1; k != -1; k --) {
+                std::cout << x[k];
+            }
+            std::cout << "\n";
+        }
+    printf("\n");
     if (row == dim_x) {
         return true;
     }
