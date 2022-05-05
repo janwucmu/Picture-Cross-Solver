@@ -56,9 +56,8 @@ void print_puzzle(pic_cross_t pic_cross) {
             for (int k = dim_y - 1; k != -1; k --) {
                 std::cout << x[k];
             }
-            std::cout << " ";
-        }
             std::cout << "\n";
+        }
 }
 void print_row_perm(std::vector<std::vector<int>> Row_perm, int dim_y) {
     for (int i = 0; i < Row_perm.size(); i ++) {
@@ -296,6 +295,7 @@ bool dfs(int row, std::vector<std::vector<int>>& Row_perm,
     int dim_x = pic_cross->dim_x;
     int dim_y = pic_cross->dim_y;
     int* puzzle = pic_cross->puzzle;
+            print_puzzle(*pic_cross);
 
     if (row == dim_x) {
         return true;
