@@ -237,23 +237,27 @@ void updateCols(int row, int numCol, std::vector<std::vector<int>>& puzzle,
 }
 
 void rowMask(int row, int numCol, std::vector<int>& mask, std::vector<int>& val, 
-             std::vector<std::vector<int>>& colVal, std::vector<std::vector<int>>& cols, 
-             std::vector<std::vector<int>>& colIx) {
+             int** colVal,
+             std::vector<std::vector<int>>& colIx, pic_cross_t pic_cross) {
+    
+    int dim_x = pic_cross.dim_x;
+    int dim_y = pic_cross.dim_y;
+    std::vector<std::vector<int>> hints = pic_cross.hints;
     mask[row] = 0;
     val[row] = 0;
     if (row == 0) {
         return;
     }
     int ixc = 1;
-    for (int c = 0; c < numCol; c++) {
+    for (int c = dim_x; c < dim_x+dim_y; c++) {
         if (colVal[row-1][c] > 0) {
             mask[row] |= ixc;
             int index = colIx[row-1][c];
-            if (cols[c][index] > colVal[row-1][c]) {
+            if (hints[c][index] > colVal[row-1][c]) {
                 val[row] |= ixc;
             }
         }
-        else if (colVal[row-1][c] == 0 && colIx[row-1][c] == cols[c].size()) {
+        else if (colVal[row-1][c] == 0 && colIx[row-1][c] == hints[c].size()) {
             mask[row] |= ixc;
         }
         ixc <<= 1;
@@ -279,28 +283,32 @@ void rowMask(int row, int numCol, std::vector<int>& mask, std::vector<int>& val,
 //     return false;
 // }
 
-boolean dfs(int row, std::vector<std::vector<int>>& Row_perms, 
-        std::vector<std::vector<int>>& mask,
-        std::vector<std::vector<int>>& val,
-        std::vector<std::vector<int>>& colVal,
-        std::vector<std::vector<int>>& cols,
-        std::vector<std::vector<int>>& colIx,
+
+bool dfs(int row, std::vector<std::vector<int>>& Row_perm, 
+        long* mask,
+        long* val,
+        int** colVal,
+        int** cols,
+        int** colIx,
         pic_cross_t * pic_cross){
 
-    int dim_x = pic_cross.dim_x;
-    int dim_y = pic_cross.dim_y;
-    rowMask(row, num_Col, mask, coVal, cols, colIx);
-    for (int i =0; i < Row_perms[row].size();i++) {
-        if (Row_perms[row][i] & mask[row] != val[row]) {
+    int dim_x = pic_cross->dim_x;
+    int dim_y = pic_cross->dim_y;
+    int* puzzle = pic_cross->puzzle;
+    rowMask(row, num_Col, &mask, coVal, colIx, pic_cross);
+    for (int i =0; i < Row_perm[row].size();i++) {
+        if (Row_perm[row][i] & mask[row] != val[row]) {
             continue;
         }
-        pic_cross->puzzle[row] = Row_perms[row][i];
-void updateCols(int row, int numCol, int* puzzle, 
-                int* colVal, int* colIx) {
-        updateCols(row, numCol, )
+        puzzle[row] = Row_perm[row][i];
+        updateCols(row, numCol, &puzzle, &colVal, &colIc);
+        if (dfs(row+1, Row_perm, &mask, &val, &colVal, &colIx, &pic_cross)) {
+            return true;
+        }
     }
-
+    return false;
 }
+
 int main(int argc, const char *argv[]) {
     pic_cross_t pic_cross = read_input(argc, argv);
     if (pic_cross.dim_x == 0) {
@@ -328,6 +336,10 @@ int main(int argc, const char *argv[]) {
     int colIx[dim_x][dim_y];
     long mask[dim_x];
     long val[dim_x];
+    if (dfs(0, Row_perm, &mask, &val, &colVal, &colIx, &pic_cross)) {
+        print_puzzle(pic_cross);
+    }
+
 
 
     // for (int i = 0; i < Row_perm.size(); i ++) {
