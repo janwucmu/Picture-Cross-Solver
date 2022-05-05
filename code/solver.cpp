@@ -215,14 +215,13 @@ void calcPerms(int r, int cur, int spaces, std::size_t perm, int shift, pic_cros
 // colIx[r][c]: current block index
 // The value increased by 1 if the column is painted in the current row.
 // The value reset to 0 and index increased by 1 if the column was painted in the previous row and is not in the current row.
-void updateCols(int row, int numCol, std::vector<std::vector<int>>& puzzle, 
-                std::vector<std::vector<int>>& colVal, std::vector<std::vector<int>>& colIx) {
-    int ixc = 0;
+void updateCols(int row, int numCol, int* puzzle, int** colVal, int** colIx) {
+    int ixc = 1;
     for (int c = 0; c < numCol; c++) {
         // copy from previous row
         colVal[row][c] = (row == 0) ? 0 : colVal[row-1][c];
         colIx[row][c] = (row == 0) ? 0 : colIx[row-1][c];
-        if ((puzzle[row][ixc]) == 0) {
+        if ((puzzle[row] & ixc) == 0) {
             if ((row > 0) && (colVal[row-1][c] > 0)) {
                 colVal[row][c] = 0;
                 colIx[row][c]++; 
@@ -231,7 +230,7 @@ void updateCols(int row, int numCol, std::vector<std::vector<int>>& puzzle,
         else {
             colVal[row][c]++;
         }
-        ixc++;
+        ixc <<= 1;
     }
 }
 
@@ -294,13 +293,13 @@ bool dfs(int row, std::vector<std::vector<int>>& Row_perm,
     int dim_x = pic_cross->dim_x;
     int dim_y = pic_cross->dim_y;
     int* puzzle = pic_cross->puzzle;
-    rowMask(row, num_Col, &mask, coVal, colIx, pic_cross);
-    for (int i =0; i < Row_perm[row].size();i++) {
+    rowMask(row, dim_y, &mask, coVal, colIx, pic_cross);
+    for (int i = 0; i < Row_perm[row].size();i++) {
         if (Row_perm[row][i] & mask[row] != val[row]) {
             continue;
         }
         puzzle[row] = Row_perm[row][i];
-        updateCols(row, numCol, &puzzle, &colVal, &colIc);
+        updateCols(row, dim_y, &puzzle, &colVal, &colIx);
         if (dfs(row+1, Row_perm, &mask, &val, &colVal, &colIx, &pic_cross)) {
             return true;
         }
