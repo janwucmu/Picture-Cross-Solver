@@ -101,5 +101,5 @@ Since we have not started working on parallelizing the sequential solver, we are
 ## Final Report
 Attached and named Project-Report-2
 
-##Final Video
+## Final Video
 https://cmu.zoom.us/rec/share/S8gUnElm73kV0brJn6bl5z2nEdpq-y2DYOkY_wnmL1DtShHuy5Uj-k8uE8ooeRN6.DYjw44O-_Sph89Ei?startTime=1651809475000
