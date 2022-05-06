@@ -97,3 +97,9 @@ In terms of progress on the goals and deliverables stated in our proposal, we ar
 We want to focus on the algorithm of our solver because we think that is a essential part of the project. It took us longer than expected and we believe our solver is one of the highlights of this project. We will then discuss the different approaches we tried to improve the speedup of the solver when it is run on multiple CPU cores. Most importantly show the performance metrics in image formatting to portray the improvements of these parallelism. It will be more of graph-based rather than a demo.
 
 Since we have not started working on parallelizing the sequential solver, we are a little concerned about what approaches to take. We think that it is going to take a few approaches as some are more scalable and others work with more diverse puzzles.
+
+## Final Report
+Attached and named Project-Report-2
+
+##Final Video
+https://cmu.zoom.us/rec/share/S8gUnElm73kV0brJn6bl5z2nEdpq-y2DYOkY_wnmL1DtShHuy5Uj-k8uE8ooeRN6.DYjw44O-_Sph89Ei?startTime=1651809475000
