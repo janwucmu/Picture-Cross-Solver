@@ -46,36 +46,36 @@ __global__ void  print_hints(thrust::device_vector<thrust::device_vector<int>> h
         printf("\n");
     }    
 }
-void print_puzzle(pic_cross_t pic_cross) {  
+__global__ void print_puzzle(pic_cross_t pic_cross) {  
     int* puzzle = pic_cross.puzzle;
     int dim_x = pic_cross.dim_x;
     int dim_y = pic_cross.dim_y;
     for (int i = 0; i < dim_x; i++) {
-        std::bitset<64> x(puzzle[i]);
+        thrust::bitset<64> x(puzzle[i]);
             for (int k = dim_y - 1; k != -1; k --) {
-                std::cout << x[k];
+                thrust::cout << x[k];
             }
-            std::cout << "\n";
+            thrust::cout << "\n";
         }
 }
 __global__ void  print_2d(int** col) { 
     for (int i = 0; i < old_dim_x; i++) {
         for (int j = 0; j < old_dim_y; j++) {
-            std::cout << col[i][j];
+            thrust::cout << col[i][j];
         }
-        std::cout << "\n";
+        thrust::cout << "\n";
     }
 }
 __global__ void  print_row_perm(thrust::device_vector<thrust::device_vector<int>> Row_perm, int dim_y) {
     for (int i = 0; i < Row_perm.size(); i ++) {
         for (int j = 0; j < Row_perm[i].size(); j ++) {
-            std::bitset<64> x(Row_perm[i][j]);
+            thrust::bitset<64> x(Row_perm[i][j]);
             for (int k = dim_y - 1; k != -1; k --) {
-                std::cout << x[k];
+                thrust::cout << x[k];
             }
-            std::cout << " ";
+            thrust::cout << " ";
         }
-            std::cout << "\n";
+            thrust::cout << "\n";
         }
 }
 __global__ void  write_output(int argc, const char *argv[], pic_cross_t pic_cross) {
@@ -86,14 +86,14 @@ __global__ void  write_output(int argc, const char *argv[], pic_cross_t pic_cros
     int dim_x = pic_cross.dim_x;
     int dim_y = pic_cross.dim_y;
 
-    std::string filename_long = ((std::string) input_filename);
+    thrust::string filename_long = ((thrust::string) input_filename);
     int index =filename_long.find_last_of("/");
-    std::string filename = filename_long.substr(index + 1, (filename_long.size() - 4 - index - 1));
-    std::ofstream output1;
-    output1.open((std::string)"outputs/output_" + filename + ".txt");
+    thrust::string filename = filename_long.substr(index + 1, (filename_long.size() - 4 - index - 1));
+    thrust::ofstream output1;
+    output1.open((thrust::string)"outputs/output_" + filename + ".txt");
     output1 << dim_x << " " << dim_y << "\n";
     for (int i = 0; i < dim_x; i++) {
-        std::bitset<64> x(puzzle[i]);
+        thrust::bitset<64> x(puzzle[i]);
             for (int k = dim_y - 1; k != -1; k --) {
                 output1 << x[k];
             }
@@ -120,11 +120,11 @@ __global__ pic_cross_t read_input(int argc, const char *argv[]) {
     pic_cross.dim_y = dim_y;
     thrust::device_vector<thrust::device_vector<int>> hints;
     hints.resize(dim_x + dim_y);
-    std::ifstream file(input_filename);
-    std::string line;
+    thrust::ifstream file(input_filename);
+    thrust::string line;
     int i = 0;
     while(getline(file, line)) {
-        std::istringstream ss(line);
+        thrust::istringstream ss(line);
         int num;
         if (temp == 1) {
             temp = 0;
@@ -164,7 +164,7 @@ __global__ float bits(int b){
     return (1 << b) - 1; // 1 => 1, 2 => 11, 3 => 111, ...
 }
 
-__global__ void  calcPerms(int r, int cur, int spaces, std::size_t perm, int shift, pic_cross_t pic_cross, thrust::device_vector<int> &res){
+__global__ void  calcPerms(int r, int cur, int spaces, thrust::size_t perm, int shift, pic_cross_t pic_cross, thrust::device_vector<int> &res){
     // int dim_x = pic_cross.dim_x;
     // int dim_y = pic_cross.dim_y;
     // int* puzzle = pic_cross.puzzle;
@@ -259,7 +259,7 @@ __global__ bool dfs(int row, thrust::device_vector<thrust::device_vector<int>>& 
     int dim_x = pic_cross->dim_x;
     int dim_y = pic_cross->dim_y;
     int* puzzle = pic_cross->puzzle;
-    int check = std::rand() %  Row_perm[row].size();
+    int check = thrust::rand() %  Row_perm[row].size();
     int index = blockIdx.x * blockDim.x + threadIdx.x;
     int thread_index = threadIdx.y * blockDim.x + threadIdx.x;
 
