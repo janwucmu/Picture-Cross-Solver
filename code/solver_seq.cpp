@@ -1,6 +1,7 @@
-#include "solver.h"
+#include "solver_seq.h"
 
 #include <assert.h>
+#include <random>
 #include <chrono>
 #include <cstdio>
 #include <cstdlib>
@@ -141,30 +142,6 @@ pic_cross_t read_input(int argc, const char *argv[]) {
     return pic_cross;
 }
 
-
-// void rowMask(int row, int* mask, int* val, int* colVal, int* colIdx, int* cols, pic_cross_t pic_cross){
-//     int dim_x = pic_cross.dim_x;
-//     mask[row] = 0;
-//     val[row] = 0;
-//     if(row == 0){
-//         return;
-//     }
-//     float ixc = 1;
-//     for(int c = 0; c < dim_x; c++){
-//         if(colVal[row-1][c] > 0){
-//             // when column at previous row is set, we know for sure what has to be the next bit according to the current size and the expected size
-//             mask[row] |= ixc; 
-//             if(cols[c][colIdx[row-1][c]] > colVal[row-1][c]){
-//                 val[row] |= ixc; // must set
-//             }
-//         }
-//         else if(colVal[row-1][c] == 0 && colIdx[row-1][c] == row){ // last row has to be length of columns
-//             // can not add anymore since out of indices
-//             mask[row] |= ixc;
-//         }
-//         ixc <<= 1;
-//     }
-// }
 // void updatedim_xols(int row, int* grid, int* colVal, int* colIdx, int* cols){
 //     float ixc = 1;
 //     for(int c = 0; c < dim_x; c++){
@@ -190,12 +167,6 @@ float bits(int b){
     return (1 << b) - 1; // 1 => 1, 2 => 11, 3 => 111, ...
 }
 
-// void printBit(float n){
-//     while(n > 0){
-//         printf("%d", n&1);
-//         n >>= 1;
-//     }
-// }
 void calcPerms(int r, int cur, int spaces, std::size_t perm, int shift, pic_cross_t pic_cross, std::vector<int> &res){
     // int dim_x = pic_cross.dim_x;
     // int dim_y = pic_cross.dim_y;
@@ -226,8 +197,6 @@ void updateCols(int row, int numCol, int* puzzle, int** colVal, int** colIx) {
     int ixc = (int)pow(2, numCol-1);
     for (int c = 0; c < numCol; c++) {
 
-            // printf("1c %d, row %d \n", c, row);
-        // copy from previous row
         colVal[row][c] = (row == 0) ? 0 : colVal[row-1][c];
         colIx[row][c] = (row == 0) ? 0 : colIx[row-1][c];
         if ((puzzle[row] & ixc) == 0) {
@@ -264,6 +233,7 @@ void rowMask(int row, int numCol, long* mask, long* val,
         if (colVal[row-1][c] > 0) {
             mask[row] |= ixc;
             int index = colIx[row-1][c];
+            // printf("c: %d row: %d hints: %d colVal: %d \n", c, row, hints[c+dim_x][index], colVal[row-1][c]);
             if (hints[c + dim_x][index] > colVal[row-1][c]) {
                 val[row] |= ixc;
             }
@@ -274,25 +244,7 @@ void rowMask(int row, int numCol, long* mask, long* val,
         ixc >>= 1;
     }
 }
-// boolean dfs(int row, int* rowPerms, int *rowPermsdim_xnt, 
-//             int* mask, int* val, int* grid, int* colVal, 
-//             int* colIdx, int* cols, pic_cross_t pic_cross){
-//     if(row == dim_y){
-//         return true;
-//     }
-//     rowMask(row, mask, val, colVal, colIdx, cols, pic_cross); // calculate mask to stay valid in the next row
-//     for(int i = 0; i < rowPermsdim_xnt[row]; i++){
-//         if((rowPerms[row][i] & mask[row]) != val[row]){
-//             continue;
-//         }
-//         grid[row] = rowPerms[row][i];
-//         updatedim_xols(row, grid, colVal, colIdx, cols);
-//         if(dfs(row + 1, rowPerms, rowPermsdim_xnt, mask, val, grid, colVal, colIdx, cols)){
-//             return true;
-//         }
-//     }
-//     return false;
-// }
+
 
 
 bool dfs(int row, std::vector<std::vector<int>>& Row_perm, 
@@ -304,38 +256,16 @@ bool dfs(int row, std::vector<std::vector<int>>& Row_perm,
     int dim_x = pic_cross->dim_x;
     int dim_y = pic_cross->dim_y;
     int* puzzle = pic_cross->puzzle;
-    printf("ROW: %d \n", row);
-    print_puzzle(*pic_cross);
-    printf("COLVAL \n");
-    print_2d(colVal);
-    printf("ColIX \n");
-    print_2d(colIx);
-    printf("Row_perm\n");
-    print_row_perm(Row_perm, dim_y);
-    printf("mask \n");
-    for (int i =0; i < dim_x; i++) {
-            std::bitset<64> x(mask[i]);
-            for (int k = dim_y - 1; k != -1; k --) {
-                std::cout << x[k];
-            }
-            std::cout << "\n";
-        }
-    printf("val \n");
-    for (int i =0; i < dim_x; i++) {
-            std::bitset<64> x(val[i]);
-            for (int k = dim_y - 1; k != -1; k --) {
-                std::cout << x[k];
-            }
-            std::cout << "\n";
-        }
-    printf("\n");
+    int check = std::rand() %  Row_perm[row].size();
+
     if (row == dim_x) {
         return true;
     }
 
     rowMask(row, dim_y, mask, val, colVal, colIx, pic_cross);
+
     for (int i = 0; i < Row_perm[row].size();i++) {
-        if (Row_perm[row][i] & mask[row] != val[row]) {
+        if ((Row_perm[row][i] & mask[row]) != val[row] && i != check) {
             continue;
         }
         puzzle[row] = Row_perm[row][i];
@@ -349,11 +279,17 @@ bool dfs(int row, std::vector<std::vector<int>>& Row_perm,
 }
 
 int main(int argc, const char *argv[]) {
+    using namespace std::chrono;
+    typedef std::chrono::high_resolution_clock Clock;
+    typedef std::chrono::duration<double> dsec;
+
+    auto init_start = Clock::now();
+    double t_time = 0;
     pic_cross_t pic_cross = read_input(argc, argv);
     if (pic_cross.dim_x == 0) {
         return 1;
     }
-    print_hints(pic_cross.hints);
+    // print_hints(pic_cross.hints);
     int dim_x = pic_cross.dim_x;
     int dim_y = pic_cross.dim_y;
     old_dim_x = dim_x;
@@ -369,10 +305,8 @@ int main(int argc, const char *argv[]) {
             space -= hints[r][i];
         }
         calcPerms(r, 0, space, 0, 0, pic_cross, res);
-        // printf("%d HUUHH", res[0]);
         Row_perm.push_back(res);
     }
-    print_row_perm(Row_perm, dim_y);
 
     int** colVal = (int**) calloc(dim_x , sizeof(int*)) ;
     int** colIx = (int**) calloc(dim_x, sizeof(int*));
@@ -380,121 +314,13 @@ int main(int argc, const char *argv[]) {
         colVal[i] = (int*) calloc(dim_y, sizeof(int));
         colIx[i] = (int*) calloc(dim_y, sizeof(int));
     }
-    long mask[dim_x];
-    long val[dim_x];
+    long* mask = (long*) calloc(dim_x, sizeof(long));
+    long* val = (long*) calloc(dim_x, sizeof(long));
+
     if (dfs(0, Row_perm, mask, val, colVal, colIx, &pic_cross)) {
-        // print_puzzle(pic_cross);
-    }
+    };
+    t_time += duration_cast<dsec>(Clock::now() - init_start).count();
+    printf("Total Time: %lf.\n", t_time);
     write_output(argc, argv, pic_cross);
-
-
-// bool dfs(int row, 
-//         std::vector<std::vector<int>>& Row_perm, 
-//         long* mask,
-//         long* val,
-//         int** colVal,
-//         int** colIx,
-//         pic_cross_t * pic_cross){
-
-    // for (int i = 0; i < Row_perm.size(); i ++) {
-    //     for (int j = 0; j < Row_perm[i].size(); j ++) {
-    //         std::bitset<64> x(Row_perm[i][j]);
-    //         for (int k = dim_y - 1; k != -1; k --) {
-    //             std::cout << x[k];
-    //         }
-    //         std::cout << " ";
-    //     }
-    //       std::cout << "\n";
-
-    // }
-    // print_hints(Row_perm);
-    // print_puzzle(pic_cross);
-    // write_output(argc, argv, pic_cross);
-    return 0;
+    
 }
-
-
-// void calcPerms(int r, int cur, int spaces, float perm, int shift, int* rows, int* grid, int* res, int length){
-//     if(cur == length){
-//         if((grid[r] & perm) == grid[r]){
-//             res.add(perm);				
-//         }
-//         return;
-//     }
-//     while(spaces >= 0){
-//         calcPerms(r, cur+1, spaces, perm|(bits(rows[r][cur])<<shift), shift+rows[r][cur]+1, rows, grid, res);
-//         shift++;
-//         spaces--;
-//     }
-// }
-// int main(int argc, char **argv) {
-//     // read input
-//     // TODO: find row and col from txt
-//     int dim_x, dim_y; // number of rows and cols
-
-//     // split into blocks
-//     int blocksize = 3;
-
-//     pic_cross_t pic_cross = read_input(argc, argv);
-//     int* grid = pic_cross_t pic_cross;
-//     std::vector<std::vector<int>> hints = pic_cross.hints;
-
-//     dim_x = pic_cross_t pic_cross.dim_x;
-//     dim_y = pic_cross_t pic_cross.dim_y;
-//     old_dim_x = dim_x;
-//     old_dim_y = dim_y;
-
-// 	int rows[dim_y][dim_x/blocksize];
-//     int cols[dim_y/blocksize][dim_x];
-
-//     for (int i = 0; i < dim_y; i++) {
-//         for (int j = 0; j < dim_x/block_size; j++) {
-//             rows[i][j] = hints[dim_x/block_size * i + j];
-//         }
-//     }
-//     for (int i = 0; i < dim_y/block_size; i++) {
-//         for (int j = 0; j < dim_x; j++) {
-//             cols[i][j] = hints[dim_x * i + j];
-//         }
-//     }
-//     // grid 
-//     // TODO: parse
-// 	// float grid[dim_y][dim_x];
-
-//     // Precalc
-//     std::vector<std::vector<float>> rowPerms; // bitwise possible permutations per row
-//     rowPerms.resize(dim_y);
-//     for(int r = 0; r < dim_y; r++){
-//         std::vector<int> res;
-//         int spaces = dim_x - (length);
-//         for(int i = 0; i < length; i++){
-//             spaces -= rows[r][i];
-//         }
-//         calcPerms(r, 0, spaces, 0, 0, res);
-//         rowPerms[r] = [res.size()];
-//         while(res.size() != 0){
-//             rowPerms[r][res.size()-1] = res[res.size() - 1];
-//             res.erase(res.size() - 1);
-//         }
-//     }
-
-//     // dim_xalculate
-//     int colVal[dim_y*dim_x];
-//     int colIdx[dim_y*dim_x];
-//     float mask[dim_y];
-//     float val[dim_y];
-//     if(dfs(0, rowPerms, rowPermsdim_xnt, mask, val, grid, colVal, colIdx, cols, pic_cross)){
-//         // Print
-//         for(int r = 0; r < dim_y; r++){
-//             for(int c = 0; c < dim_x; c++){
-//                 int result = (grid[r] & (1<<c)) == 0 ? EMPTY : FILLED;
-//                 printf("%d", result);
-//             }
-//             printf("\n");
-//         }
-//     }
-//     else{
-//         printf("No solution was found");
-//     }
-//     return 0;
-// }

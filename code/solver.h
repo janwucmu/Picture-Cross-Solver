@@ -1,15 +1,17 @@
-#include <assert.h>
-#include <chrono>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <omp.h>
-#include <iostream>
 #include <algorithm>
-#include <fstream>
-#include <sstream>
+#include <string>
+#define _USE_MATH_DEFINES
+#include <math.h>
+#include <stdio.h>
+#include <vector>
+
+#include <cuda.h>
+#include <cuda_runtime.h>
+#include <driver_functions.h>
+#include <thrust/device_vector.h>
+
 typedef struct { /* Define the data structure for wire here */
-   std::vector<std::vector<int>> hints;
+   thrust::device_vector<thrust::device_vector<int>>hints;
    int* puzzle;
    int dim_x;
    int dim_y;

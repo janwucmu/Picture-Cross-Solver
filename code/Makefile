@@ -1,6 +1,6 @@
-APP_NAME=solver
+APP_NAME=solver_seq
 
-OBJS=solver.o
+OBJS=solver_seq.o
 
 CXX = g++ -m64 -std=c++11
 CXXFLAGS = -I. -O3 -Wall -fopenmp -Wno-unknown-pragmas
